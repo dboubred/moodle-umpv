@@ -1,8 +1,9 @@
-name: Clone django_econet via SSH
+name: Clone django_econet repo
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   clone:
@@ -12,27 +13,23 @@ jobs:
       - name: Checkout dépôt actuel
         uses: actions/checkout@v3
 
-      - name: Configurer clé SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - name: Éviter que Git demande un login
+        run: git config --global credential.helper ""
 
-      - name: Cloner le dépôt django_econet via SSH
-        run: git clone git@github.com:djamelboubred/django_econet.git temp_repo
+      - name: Cloner le dépôt public django_econet
+        run: git clone https://github.com/djamelboubred/django_econet.git temp_repo
 
-      - name: Configurer Git
+      - name: Configurer Git pour les commits
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Copier les fichiers sans .git
+      - name: Copier les fichiers sans casser le repo
         run: |
           shopt -s dotglob
           cp -r temp_repo/* ./
 
-      - name: Créer une branche et push
+      - name: Créer une nouvelle branche et push
         run: |
           git checkout -b synced-from-django-econet
           git add .
