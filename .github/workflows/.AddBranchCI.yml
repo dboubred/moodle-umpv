@@ -21,8 +21,8 @@ jobs:
         run: |
           shopt -s dotglob
           cp -r temp_repo/* ./
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "dboubred"
+          git config --global user.email "djamel.boubred@univ-montp3.fr"
           git checkout -b synced-from-django-econet
           git add .
           git commit -m "Sync dépôt django_econet"
