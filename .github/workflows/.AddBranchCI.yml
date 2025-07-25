@@ -3,31 +3,34 @@ name: Clone django_econet repo
 on:
   push:
     branches:
-      - main  # Lance le workflow à chaque push sur la branche main
+      - main
 
 jobs:
   clone:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Cloner ton dépôt actuel
+      - name: Checkout dépôt actuel
         uses: actions/checkout@v3
-      - name: Config Git pour ne pas demander d’authentification
-        run: git config --global credential.helper ""
-      
-      - name: Cloner le dépôt django_econet (public)
-        run: |
-          git clone https://github.com/djamelboubred/django_econet.git temp_repo
 
-      - name: Configurer Git
+      - name: Éviter que Git demande un login
+        run: git config --global credential.helper ""
+
+      - name: Cloner le dépôt public django_econet
+        run: git clone https://github.com/djamelboubred/django_econet.git temp_repo
+
+      - name: Configurer Git pour les commits
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Copier le contenu dans une nouvelle branche
+      - name: Copier les fichiers sans casser le repo
         run: |
           shopt -s dotglob
           cp -r temp_repo/* ./
+
+      - name: Créer une nouvelle branche et push
+        run: |
           git checkout -b synced-from-django-econet
           git add .
           git commit -m "Copie du dépôt django_econet"
