@@ -24,19 +24,25 @@ jobs:
         run: |
           shopt -s dotglob
           cp -r temp_repo/* . || true
+
       # 4. Configurer user
       - name: Configurer user
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       # 5. Créer une branche
       - name: Créer une nouvelle branche
         run: |
           git checkout -b synced-from-django-econet
-          
-      # 6. Commit et push
+
+      # 6. Commit et push avec vérification
       - name: Commit sur nouvelle branche
         run: |
           git add .
-          git commit -m "Import depuis django_econet"
-          git push origin synced-from-django-econet --force
+          if git diff --cached --quiet; then
+            echo "Aucun changement détecté, commit ignoré"
+          else
+            git commit -m "Import depuis django_econet"
+            git push origin synced-from-django-econet --force
+          fi
