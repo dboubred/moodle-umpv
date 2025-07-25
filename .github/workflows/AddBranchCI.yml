@@ -1,0 +1,42 @@
+name: Sync django_econet repo
+
+on:
+  push:
+    branches:
+      - main  # ou ta branche principale
+
+jobs:
+  sync_repo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v3
+
+      - name: Configurer Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Cloner django_econet
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir temp_repo
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          git clone git@github.com:djamelboubred/django_econet.git temp_repo
+
+      - name: Copier contenu django_econet dans le repo actuel
+        run: |
+          cp -r temp_repo/* temp_repo/.* . 2>/dev/null || true
+          # Supprimer dossiers git dans le répertoire actuel pour éviter conflits
+          rm -rf .git
+          # Réinitialiser git pour ce repo
+          git init
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git checkout -b new-branch-from-django-econet
+          git add .
+          git commit -m "Sync django_econet repo into new branch"
+          git push -u origin new-branch-from-django-econet --force
