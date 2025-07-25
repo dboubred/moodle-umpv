@@ -1,22 +1,15 @@
-stages:
-  - update
+name: CI
 
-update_moodle_coeur:
-    stage: update
-    image: alpine:latest
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
-    before_script:
-        - apk add --no-cache git
-        - git config --global user.name "CI Moodle Bot"
-        - git config --global user.email "ci-bot@example.com"
-    script:
-        - git clone --branch moodle_coeur https://gitlab.univ-montp3.fr/moodle/moodle-umpv.git moodle-upstream
-        - cd moodle-upstream
-        - git remote add moodle https://github.com/moodle/moodle.git
-        - git fetch moodle MOODLE_405_STABLE  # Récupère les derniers changements de Moodle 4.5 depuis GitHub
-        - git checkout moodle_coeur  # Assure-toi de travailler sur ta branche coeur_moodle
-        - git merge moodle/MOODLE_405_STABLE  # Fusionne les changements de MOODLE_405_STABLE dans ta branche coeur_moodle
-        - git push gitlab HEAD:moodle_coeur  # Pousse ta branche mise à jour sur ton dépôt GitLab
-    only:
-        refs:
-            - moodle_coeur  # ou la branche sur laquelle tu veux que ça se passe
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Exécuter un script
+        run: echo "Hello depuis GitHub Actions 👋"
