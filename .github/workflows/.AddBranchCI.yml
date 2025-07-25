@@ -1,29 +1,42 @@
-name: Clone public repo
+name: Import django_econet
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
-  clone-public-repo:
+  import:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo actuel
+      # 1. Checkout ton repo actuel
+      - name: Checkout dépôt actuel
         uses: actions/checkout@v3
 
-      - name: Cloner un dépôt public via HTTPS
+      # 2. Cloner le dépôt public django_econet
+      - name: Cloner django_econet
         run: |
           git clone https://github.com/djamelboubred/django_econet.git temp_repo
           ls temp_repo
-      - name: Copier dans une branche
+
+      # 3. Copier les fichiers depuis temp_repo (en excluant .git)
+      - name: Copier les fichiers dans le dépôt courant
         run: |
           shopt -s dotglob
-          cp -r temp_repo/* ./
-          git config --global user.name "dboubred"
-          git config --global user.email "djamel.boubred@univ-montp3.fr"
+          cp -r temp_repo/* . || true
+      # 4. Configurer user
+      - name: Configurer user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      # 5. Créer une branche
+      - name: Créer une nouvelle branche
+        run: |
           git checkout -b synced-from-django-econet
+          
+      # 6. Commit et push
+      - name: Commit sur nouvelle branche
+        run: |
           git add .
-          git commit -m "Sync dépôt django_econet"
+          git commit -m "Import depuis django_econet"
           git push origin synced-from-django-econet --force
