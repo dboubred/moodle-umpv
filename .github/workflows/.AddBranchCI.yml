@@ -3,7 +3,7 @@ name: Clone django_econet repo
 on:
   push:
     branches:
-      - main  # Déclenche le workflow sur chaque push sur main
+      - main  # Lance le workflow à chaque push sur la branche main
 
 jobs:
   clone:
@@ -13,7 +13,7 @@ jobs:
       - name: Cloner ton dépôt actuel
         uses: actions/checkout@v3
 
-      - name: Cloner django_econet
+      - name: Cloner le dépôt django_econet (public)
         run: |
           git clone https://github.com/djamelboubred/django_econet.git temp_repo
 
@@ -21,16 +21,11 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
+
       - name: Copier le contenu dans une nouvelle branche
         run: |
-          # Copier les fichiers du dépôt cloné dans le repo courant
           cp -r temp_repo/* temp_repo/.* . 2>/dev/null || true
-     
-          # Créer une nouvelle branche
           git checkout -b synced-from-django-econet
-
-          # Nettoyer l’historique et re-commit dans la nouvelle branche
           git add .
           git commit -m "Copie du dépôt django_econet"
           git push origin synced-from-django-econet --force
