@@ -1,4 +1,4 @@
-name: Clone django_econet repo
+name: Clone public repo
 
 on:
   push:
@@ -6,32 +6,14 @@ on:
       - main
 
 jobs:
-  clone:
+  clone-public-repo:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout dépôt actuel
+      - name: Checkout repo actuel
         uses: actions/checkout@v3
 
-      - name: Éviter que Git demande un login
-        run: git config --global credential.helper ""
-
-      - name: Cloner le dépôt public django_econet
-        run: git clone https://github.com/djamelboubred/django_econet.git temp_repo
-
-      - name: Configurer Git pour les commits
+      - name: Cloner un dépôt public via HTTPS
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Copier les fichiers sans casser le repo
-        run: |
-          shopt -s dotglob
-          cp -r temp_repo/* ./
-
-      - name: Créer une nouvelle branche et push
-        run: |
-          git checkout -b synced-from-django-econet
-          git add .
-          git commit -m "Copie du dépôt django_econet"
-          git push origin synced-from-django-econet --force
+          git clone https://github.com/djamelboubred/django_econet.git temp_repo
+          ls temp_repo
