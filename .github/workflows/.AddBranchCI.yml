@@ -12,7 +12,9 @@ jobs:
     steps:
       - name: Cloner ton dépôt actuel
         uses: actions/checkout@v3
-
+      - name: Config Git pour ne pas demander d’authentification
+        run: git config --global credential.helper ""
+      
       - name: Cloner le dépôt django_econet (public)
         run: |
           git clone https://github.com/djamelboubred/django_econet.git temp_repo
@@ -24,7 +26,8 @@ jobs:
 
       - name: Copier le contenu dans une nouvelle branche
         run: |
-          cp -r temp_repo/* temp_repo/.* . 2>/dev/null || true
+          shopt -s dotglob
+          cp -r temp_repo/* ./
           git checkout -b synced-from-django-econet
           git add .
           git commit -m "Copie du dépôt django_econet"
