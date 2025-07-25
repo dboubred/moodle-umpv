@@ -17,11 +17,16 @@ jobs:
         run: |
           git clone https://github.com/djamelboubred/django_econet.git temp_repo
 
+      - name: Configurer Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
       - name: Copier le contenu dans une nouvelle branche
         run: |
           # Copier les fichiers du dépôt cloné dans le repo courant
           cp -r temp_repo/* temp_repo/.* . 2>/dev/null || true
-
+     
           # Créer une nouvelle branche
           git checkout -b synced-from-django-econet
 
